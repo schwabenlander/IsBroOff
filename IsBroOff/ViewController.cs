@@ -46,7 +46,7 @@ namespace IsBroOff
                 ResultLabel.TextColor = UIColor.Green;
                 ResultLabel.Text = "Yes!";
 
-                StatusLabel.Text = $"Bro is off on: {date.ToLongDateString()}.";
+                StatusLabel.Text = $"Bro is off on: {date.ToLongDateString()}";
                 StatusLabel.Hidden = false;
 
                 CallBroButton.Hidden = false;
@@ -56,7 +56,7 @@ namespace IsBroOff
                 ResultLabel.TextColor = UIColor.Red;
                 ResultLabel.Text = "No";
 
-                StatusLabel.Text = $"Bro has work on: {date.ToLongDateString()}.";
+                StatusLabel.Text = $"Bro has work on: {date.ToLongDateString()}";
                 StatusLabel.Hidden = false;
             }
 

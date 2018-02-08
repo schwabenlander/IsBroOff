@@ -69,9 +69,9 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="1842" translatesAutoresizingMaskIntoConstraints="NO" fixedFrame="YES" hidden="YES" selected="YES">
-                                <rect key="frame" x="58" y="495" width="204" height="50"/>
+                                <rect key="frame" x="58" y="495" width="204" height="53"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="24" weight="heavy"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="25" weight="heavy"/>
                                 <state key="normal" title="📞 Call Bro"/>
                                 <connections>
                                     <action selector="CallBroButton_TouchUpInside:" destination="BYZ-38-t0r" id="1857" eventType="touchUpInside"/>
