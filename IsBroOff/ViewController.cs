@@ -47,28 +47,7 @@ namespace IsBroOff
                 return;
             }
 
-            var broIsOff = await IsBroOffApiCallAsync(date);
-
-            if (broIsOff)
-            {
-                ResultLabel.TextColor = UIColor.Green;
-                ResultLabel.Text = "Yes!";
-
-                StatusLabel.Text = $"Bro is off on: {date.ToLongDateString()}";
-                StatusLabel.Hidden = false;
-
-                CallBroButton.Hidden = false;
-            }
-            else
-            {
-                ResultLabel.TextColor = UIColor.Red;
-                ResultLabel.Text = "No";
-
-                StatusLabel.Text = $"Bro has work on: {date.ToLongDateString()}";
-                StatusLabel.Hidden = false;
-            }
-
-            ResultLabel.Hidden = false;
+            IsBroOffApiCall(date);
         }
 
         partial void QueryDatePicker_ValueChanged(UIDatePicker sender)
@@ -96,7 +75,7 @@ namespace IsBroOff
         //    return false;
         //}
 
-        private async System.Threading.Tasks.Task<bool> IsBroOffApiCallAsync(DateTime queryDate)
+        private async void IsBroOffApiCall(DateTime queryDate)
         {
             var client = new HttpClient
             {
@@ -111,7 +90,28 @@ namespace IsBroOff
 
             var scheduleResponse = JsonConvert.DeserializeObject<ScheduleResponse>(result);
 
-            return scheduleResponse.IsBroOff;
+            var broIsOff = scheduleResponse.IsBroOff;
+
+            if (broIsOff)
+            {
+                ResultLabel.TextColor = UIColor.Green;
+                ResultLabel.Text = "Yes!";
+
+                StatusLabel.Text = $"Bro is off on: {queryDate.ToLongDateString()}";
+                StatusLabel.Hidden = false;
+
+                CallBroButton.Hidden = false;
+            }
+            else
+            {
+                ResultLabel.TextColor = UIColor.Red;
+                ResultLabel.Text = "No";
+
+                StatusLabel.Text = $"Bro has work on: {queryDate.ToLongDateString()}";
+                StatusLabel.Hidden = false;
+            }
+
+            ResultLabel.Hidden = false;
         }
 
         partial void CallBroButton_TouchUpInside(UIButton sender)
