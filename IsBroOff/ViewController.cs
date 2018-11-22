@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Net.Http;
 using Foundation;
+using IsBroOff.Models;
+using Newtonsoft.Json;
 using UIKit;
 
 namespace IsBroOff
@@ -27,13 +30,16 @@ namespace IsBroOff
 
         partial void FindOutButton_TouchUpInside(UIButton sender)
         {
+            StatusLabel.Text = "Please wait...";
+            StatusLabel.Hidden = false;
+
             var date = DateTime.Parse(QueryDatePicker.Date.ToString());
 
             if (date <= KnownFirstDayOff)
             {
-                var dateErrorAlert = 
-                    UIAlertController.Create("Invalid Date", 
-                                             $"Please choose a date after {KnownFirstDayOff.ToShortDateString()}.", 
+                var dateErrorAlert =
+                    UIAlertController.Create("Invalid Date",
+                                             $"Please choose a date after {KnownFirstDayOff.ToShortDateString()}.",
                                              UIAlertControllerStyle.Alert);
                 dateErrorAlert.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
                 PresentViewController(dateErrorAlert, true, null);
@@ -41,7 +47,9 @@ namespace IsBroOff
                 return;
             }
 
-            if (IsBroOff(date))
+            var broIsOff = await IsBroOffApiCallAsync(date);
+
+            if (broIsOff)
             {
                 ResultLabel.TextColor = UIColor.Green;
                 ResultLabel.Text = "Yes!";
@@ -72,18 +80,38 @@ namespace IsBroOff
             CallBroButton.Hidden = true;
         }
 
-        private bool IsBroOff(DateTime queryDate)
+        //private bool IsBroOffAsync(DateTime queryDate)
+        //{
+        //    var result = IsBroOffApiCallAsync(queryDate);
+        //
+        //    if (queryDate < KnownFirstDayOff)
+        //        throw new ArgumentOutOfRangeException();
+        //
+        //    var daysSinceKnownFirstDayOff = (queryDate.Date - KnownFirstDayOff.Date).Days;
+        //    var carrier = daysSinceKnownFirstDayOff % 8;
+        //
+        //    if (carrier >= 0 && carrier < 4)
+        //        return true;
+        //
+        //    return false;
+        //}
+
+        private async System.Threading.Tasks.Task<bool> IsBroOffApiCallAsync(DateTime queryDate)
         {
-            if (queryDate < KnownFirstDayOff)
-                throw new ArgumentOutOfRangeException();
+            var client = new HttpClient
+            {
+                BaseAddress = new Uri("https://isbrooff.azurewebsites.net")
+            };
 
-            var daysSinceKnownFirstDayOff = (queryDate.Date - KnownFirstDayOff.Date).Days;
-            var carrier = daysSinceKnownFirstDayOff % 8;
+            HttpResponseMessage response =
+                await client.GetAsync(
+                    $"/api/calendar/{queryDate.Year}/{queryDate.Month}/{queryDate.Day}");
 
-            if (carrier >= 0 && carrier < 4)
-                return true;
+            var result = await response.Content.ReadAsStringAsync();
 
-            return false;
+            var scheduleResponse = JsonConvert.DeserializeObject<ScheduleResponse>(result);
+
+            return scheduleResponse.IsBroOff;
         }
 
         partial void CallBroButton_TouchUpInside(UIButton sender)
@@ -91,10 +119,10 @@ namespace IsBroOff
             var url = new NSUrl("tel:+97433498773");
             if (!UIApplication.SharedApplication.OpenUrl(url))
             {
-               var notSupportedAlert = 
-                    UIAlertController.Create("Not Supported", 
-                                             "You cannot make voice calls using this device.", 
-                                             UIAlertControllerStyle.Alert);
+                var notSupportedAlert =
+                     UIAlertController.Create("Not Supported",
+                                              "You cannot make voice calls using this device.",
+                                              UIAlertControllerStyle.Alert);
                 notSupportedAlert.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
                 PresentViewController(notSupportedAlert, true, null);
             };
