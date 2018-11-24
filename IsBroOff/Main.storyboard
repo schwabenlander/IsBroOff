@@ -68,7 +68,7 @@
                                 <rect key="frame" x="0.0" y="495" width="414" height="59"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="26"/>
-                                <state key="normal" title="📞 Call Abdullah"/>
+                                <state key="normal" title="📞 Call Bro"/>
                                 <connections>
                                     <action selector="CallBroButton_TouchUpInside:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1857"/>
                                 </connections>

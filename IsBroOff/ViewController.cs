@@ -4,11 +4,13 @@ using Foundation;
 using IsBroOff.Models;
 using Newtonsoft.Json;
 using UIKit;
+using Plugin.Connectivity;
 
 namespace IsBroOff
 {
     public partial class ViewController : UIViewController
     {
+        readonly string BaseUri = "https://isbrooff.azurewebsites.net";
         readonly DateTime KnownFirstDayOff = new DateTime(2018, 1, 7);
 
         protected ViewController(IntPtr handle) : base(handle)
@@ -30,9 +32,6 @@ namespace IsBroOff
 
         partial void FindOutButton_TouchUpInside(UIButton sender)
         {
-            StatusLabel.Text = "Please wait...";
-            StatusLabel.Hidden = false;
-
             var date = DateTime.Parse(QueryDatePicker.Date.ToString());
 
             if (date <= KnownFirstDayOff)
@@ -47,10 +46,29 @@ namespace IsBroOff
                 return;
             }
 
-            IsBroOffApiCall(date);
+            StatusLabel.Hidden = true;
+            StatusLabel.Text = "Please wait...";
+            StatusLabel.Hidden = false;
+
+            if (CrossConnectivity.Current.IsConnected &&
+                Reachability.IsHostReachable(BaseUri))
+            {
+                IsBroOffApiCall(date);
+            }
+            else 
+            {
+                ClearLabels();
+                StatusLabel.Text = "Unable to connect to server.";
+                StatusLabel.Hidden = false;
+            }
         }
 
         partial void QueryDatePicker_ValueChanged(UIDatePicker sender)
+        {
+            ClearLabels();
+        }
+
+        private void ClearLabels()
         {
             ResultLabel.Hidden = true;
             StatusLabel.Hidden = true;
@@ -59,7 +77,7 @@ namespace IsBroOff
             CallBroButton.Hidden = true;
         }
 
-        //private bool IsBroOffAsync(DateTime queryDate)
+        //private bool IsBroOff(DateTime queryDate)
         //{
         //    var result = IsBroOffApiCallAsync(queryDate);
         //
@@ -79,7 +97,7 @@ namespace IsBroOff
         {
             var client = new HttpClient
             {
-                BaseAddress = new Uri("https://isbrooff.azurewebsites.net")
+                BaseAddress = new Uri(BaseUri)
             };
 
             HttpResponseMessage response =
